@@ -19,7 +19,7 @@
         <button type="submit" class="btn">Login</button>
 
         <div class="links">
-            <a href="#">Forgot Password?</a>
+            <a href="forgot-password.php">Forgot Password?</a>
             <span>|</span>
             <a href="register.php">Register Now</a>
         </div>
