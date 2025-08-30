@@ -6,7 +6,7 @@
         <h2>Admin Panel</h2>
         <ul>
             <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Manage Doctors</a></li>
+            <li><a href="../admin/manage-doctors.php">Manage Doctors</a></li>
             <li><a href="#">Manage Patients</a></li>
             <li><a href="#">Manage Lab Assistants</a></li>
             <li><a href="#">Manage Appointments</a></li>
