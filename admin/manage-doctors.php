@@ -11,23 +11,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['doctor_id'])) {
     $email = $_POST['email'];
     $department = $_POST['department'];
     $position = $_POST['position'];
-    $availability = $_POST['availability'];
 
     $sql_update = "UPDATE users u
                    JOIN doctors d ON u.id = d.user_id
                    SET u.first_name = ?, u.last_name = ?, u.username = ?, u.email = ?,
-                       d.department = ?, d.position = ?, d.availability = ?
+                       d.department = ?, d.position = ?
                    WHERE d.id = ?";
     $stmt = $conn->prepare($sql_update);
-    $stmt->execute([$first_name, $last_name, $username, $email, $department, $position, $availability, $doctor_id]);
+    $stmt->execute([$first_name, $last_name, $username, $email, $department, $position, $doctor_id]);
 
-    // Redirect to avoid resubmission
     header("Location: manage-doctors.php");
     exit;
 }
 
 // ------------------ Fetch Doctors ------------------
-$sql = "SELECT d.id, u.first_name, u.last_name, u.username, u.email, d.department, d.position, d.availability
+$sql = "SELECT d.id, u.first_name, u.last_name, u.username, u.email, d.department, d.position
         FROM doctors d
         JOIN users u ON d.user_id = u.id
         WHERE u.role = 'doctor'";
@@ -53,7 +51,6 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th>Email</th>
             <th>Department</th>
             <th>Position</th>
-            <th>Availability</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -69,19 +66,13 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= $row['department'] ?></td>
                     <td><?= $row['position'] ?></td>
                     <td>
-                        <?php
-                        $days = explode(';', $row['availability']);
-                        foreach($days as $day) echo $day . "<br>";
-                        ?>
-                    </td>
-                    <td>
                         <a href="#" class="edit-btn">Edit</a> |
                         <a href="#" class="delete-btn">Delete</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
         <?php else: ?>
-            <tr><td colspan="9">No doctors found.</td></tr>
+            <tr><td colspan="8">No doctors found.</td></tr>
         <?php endif; ?>
         </tbody>
     </table>
@@ -119,11 +110,6 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <label>Position</label>
                 <input type="text" name="position" id="position" required>
             </div>
-            <div class="form-group">
-                <label>Availability</label>
-                <input type="text" name="availability" id="availability" required>
-                <small>Format: Sunday:10-5;Monday:9-5</small>
-            </div>
 
             <button type="submit" class="btn">Update Doctor</button>
         </form>
@@ -135,7 +121,6 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
     const modal = document.getElementById("editModal");
     const span = modal.querySelector(".close");
 
-    // Open modal and populate fields
     document.querySelectorAll(".edit-btn").forEach(btn => {
         btn.addEventListener("click", function(e) {
             e.preventDefault();
@@ -148,13 +133,11 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById("email").value = row.cells[4].innerText;
             document.getElementById("department").value = row.cells[5].innerText;
             document.getElementById("position").value = row.cells[6].innerText;
-            document.getElementById("availability").value = row.cells[7].innerText.replace(/<br>/g, ";");
 
             modal.style.display = "block";
         });
     });
 
-    // Close modal
     span.onclick = function() {
         modal.style.display = "none";
     }
