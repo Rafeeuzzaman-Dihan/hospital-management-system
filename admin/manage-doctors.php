@@ -2,6 +2,29 @@
 include "../db/connection.php";
 include "../includes/admin-sidebar.php";
 
+// ------------------ Handle Add ------------------
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_doctor'])) {
+    $first_name = $_POST['first_name'];
+    $last_name = $_POST['last_name'];
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $department = $_POST['department'];
+    $position = $_POST['position'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+    // Insert into users table
+    $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, username, email, password, role) VALUES (?, ?, ?, ?, ?, 'doctor')");
+    $stmt->execute([$first_name, $last_name, $username, $email, $password]);
+    $user_id = $conn->lastInsertId();
+
+    // Insert into doctors table
+    $stmt = $conn->prepare("INSERT INTO doctors (user_id, department, position) VALUES (?, ?, ?)");
+    $stmt->execute([$user_id, $department, $position]);
+
+    header("Location: manage-doctors.php");
+    exit;
+}
+
 // ------------------ Handle Update ------------------
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['doctor_id'])) {
     $doctor_id = $_POST['doctor_id'];
@@ -24,6 +47,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['doctor_id'])) {
     exit;
 }
 
+// ------------------ Handle Delete ------------------
+if (isset($_GET['delete_id'])) {
+    $delete_id = $_GET['delete_id'];
+
+    // First get user_id
+    $stmt = $conn->prepare("SELECT user_id FROM doctors WHERE id = ?");
+    $stmt->execute([$delete_id]);
+    $user_id = $stmt->fetchColumn();
+
+    // Delete from doctors
+    $stmt = $conn->prepare("DELETE FROM doctors WHERE id = ?");
+    $stmt->execute([$delete_id]);
+
+    // Delete from users
+    $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+
+    header("Location: manage-doctors.php");
+    exit;
+}
+
 // ------------------ Fetch Doctors ------------------
 $sql = "SELECT d.id, u.first_name, u.last_name, u.username, u.email, d.department, d.position
         FROM doctors d
@@ -39,7 +83,7 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="admin-content">
     <h2>Manage Doctors</h2>
-    <a href="#" class="btn add-btn">Add Doctor</a>
+    <a href="#" class="btn add-btn" id="openAddModal">Add Doctor</a>
 
     <table>
         <thead>
@@ -55,7 +99,7 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </tr>
         </thead>
         <tbody>
-        <?php if (count($doctors) > 0): ?>
+        <?php if(count($doctors) > 0): ?>
             <?php foreach($doctors as $row): ?>
                 <tr>
                     <td><?= $row['id'] ?></td>
@@ -67,7 +111,7 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= $row['position'] ?></td>
                     <td>
                         <a href="#" class="edit-btn">Edit</a> |
-                        <a href="#" class="delete-btn">Delete</a>
+                        <a href="?delete_id=<?= $row['id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this doctor?')">Delete</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -78,14 +122,53 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </table>
 </div>
 
+<!-- ------------------ Add Modal ------------------ -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Add Doctor</h3>
+        <form method="post">
+            <input type="hidden" name="add_doctor" value="1">
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" name="first_name" required>
+            </div>
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" name="last_name" required>
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label>Department</label>
+                <input type="text" name="department" required>
+            </div>
+            <div class="form-group">
+                <label>Position</label>
+                <input type="text" name="position" required>
+            </div>
+            <button type="submit" class="btn">Add Doctor</button>
+        </form>
+    </div>
+</div>
+
 <!-- ------------------ Edit Modal ------------------ -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
         <h3>Edit Doctor</h3>
-        <form id="editDoctorForm" method="post" action="">
+        <form method="post">
             <input type="hidden" name="doctor_id" id="doctor_id">
-
             <div class="form-group">
                 <label>First Name</label>
                 <input type="text" name="first_name" id="first_name" required>
@@ -110,7 +193,6 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <label>Position</label>
                 <input type="text" name="position" id="position" required>
             </div>
-
             <button type="submit" class="btn">Update Doctor</button>
         </form>
     </div>
@@ -118,14 +200,13 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!-- ------------------ JS ------------------ -->
 <script>
-    const modal = document.getElementById("editModal");
-    const span = modal.querySelector(".close");
-
+    // Edit Modal
+    const editModal = document.getElementById("editModal");
+    const editClose = editModal.querySelector(".close");
     document.querySelectorAll(".edit-btn").forEach(btn => {
         btn.addEventListener("click", function(e) {
             e.preventDefault();
             const row = this.closest("tr");
-
             document.getElementById("doctor_id").value = row.cells[0].innerText;
             document.getElementById("first_name").value = row.cells[1].innerText;
             document.getElementById("last_name").value = row.cells[2].innerText;
@@ -133,15 +214,21 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById("email").value = row.cells[4].innerText;
             document.getElementById("department").value = row.cells[5].innerText;
             document.getElementById("position").value = row.cells[6].innerText;
-
-            modal.style.display = "block";
+            editModal.style.display = "block";
         });
     });
+    editClose.onclick = () => editModal.style.display = "none";
 
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
+    // Add Modal
+    const addModal = document.getElementById("addModal");
+    const openAddModalBtn = document.getElementById("openAddModal");
+    const addClose = addModal.querySelector(".close");
+    openAddModalBtn.onclick = () => addModal.style.display = "block";
+    addClose.onclick = () => addModal.style.display = "none";
+
+    // Close modals on outside click
     window.onclick = function(event) {
-        if (event.target == modal) modal.style.display = "none";
-    }
+        if(event.target == editModal) editModal.style.display = "none";
+        if(event.target == addModal) addModal.style.display = "none";
+    };
 </script>
