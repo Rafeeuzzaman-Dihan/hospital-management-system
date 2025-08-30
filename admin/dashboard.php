@@ -1,5 +1,3 @@
-<?php include "../includes/navbar.php"; ?>
-
 <link rel="stylesheet" href="../css/navbar.css">
 <link rel="stylesheet" href="../css/admin-dashboard.css">
 
@@ -10,9 +8,9 @@
             <li><a href="#">Dashboard</a></li>
             <li><a href="#">Manage Doctors</a></li>
             <li><a href="#">Manage Patients</a></li>
-            <li><a href="#">Manage Lab</a></li>
-            <li><a href="#">Appointments</a></li>
-            <li><a href="#">Reports</a></li>
+            <li><a href="#">Manage Lab Assistants</a></li>
+            <li><a href="#">Manage Appointments</a></li>
+            <li><a href="#">Manage Reports</a></li>
             <li><a href="../auth/logout.php">Logout</a></li>
         </ul>
     </aside>
