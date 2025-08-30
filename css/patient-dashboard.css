@@ -115,6 +115,24 @@
     background-color: #219150;
 }
 
+.card .btn {
+    display: inline-block;
+    margin-top: 10px;
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+}
+
+.card .btn:hover {
+    background-color: #c0392b;
+}
+
+
 .error, .success {
     padding: 10px;
     margin-bottom: 15px;

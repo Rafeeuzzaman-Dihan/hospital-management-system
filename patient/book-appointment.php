@@ -3,6 +3,7 @@ session_start();
 include "../db/connection.php";
 include "../includes/user-sidebar.php";
 
+
 $user_id = $_SESSION['user_id'];
 $success = '';
 $errors = [];
@@ -41,46 +42,45 @@ $stmt->execute();
 $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-    <link rel="stylesheet" href="../css/patient-dashboard.css">
-    <link rel="stylesheet" href="../css/navbar.css">
+<link rel="stylesheet" href="../css/patient-dashboard.css">
+<link rel="stylesheet" href="../css/navbar.css">
 
-    <div class="dashboard-container">
-        <h1>Book Appointment</h1>
+<div class="dashboard-container">
+    <h1>Book Appointment</h1>
 
-        <?php if(!empty($errors)): ?>
-            <div class="error">
-                <?php foreach($errors as $err) echo "<p>$err</p>"; ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if($success): ?>
-            <div class="success">
-                <p><?= $success ?></p>
-            </div>
-        <?php endif; ?>
-
-        <div class="cards">
-            <?php foreach($doctors as $doc): ?>
-                <div class="card">
-                    <h3><?= $doc['first_name'] ?> <?= $doc['last_name'] ?></h3>
-                    <p><strong>Position:</strong> <?= $doc['position'] ?></p>
-                    <p><strong>Department:</strong> <?= $doc['department'] ?></p>
-
-                    <!-- Booking form -->
-                    <form method="post">
-                        <input type="hidden" name="doctor_id" value="<?= $doc['id'] ?>">
-                        <div class="form-group">
-                            <label>Date:</label>
-                            <input type="date" name="appointment_date" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Time:</label>
-                            <input type="time" name="appointment_time" required>
-                        </div>
-                        <button type="submit" name="book_appointment" class="btn">Book</button>
-                    </form>
-                </div>
-            <?php endforeach; ?>
+    <?php if(!empty($errors)): ?>
+        <div class="error">
+            <?php foreach($errors as $err) echo "<p>$err</p>"; ?>
         </div>
+    <?php endif; ?>
+
+    <?php if($success): ?>
+        <div class="success">
+            <p><?= $success ?></p>
+        </div>
+    <?php endif; ?>
+
+    <div class="cards">
+        <?php foreach($doctors as $doc): ?>
+            <div class="card">
+                <h3><?= $doc['first_name'] ?> <?= $doc['last_name'] ?></h3>
+                <p><strong>Position:</strong> <?= $doc['position'] ?></p>
+                <p><strong>Department:</strong> <?= $doc['department'] ?></p>
+
+                <!-- Booking form -->
+                <form method="post">
+                    <input type="hidden" name="doctor_id" value="<?= $doc['id'] ?>">
+                    <div class="form-group">
+                        <label>Date:</label>
+                        <input type="date" name="appointment_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time:</label>
+                        <input type="time" name="appointment_time" required>
+                    </div>
+                    <button type="submit" name="book_appointment" class="btn">Book</button>
+                </form>
+            </div>
+        <?php endforeach; ?>
     </div>
-<?php
+</div>
