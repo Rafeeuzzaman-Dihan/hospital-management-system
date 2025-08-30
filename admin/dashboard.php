@@ -1,21 +1,10 @@
+<?php
+include "../includes/admin-sidebar.php";
+?>
 <link rel="stylesheet" href="../css/navbar.css">
 <link rel="stylesheet" href="../css/admin-dashboard.css">
 
-<div class="dashboard-container">
-    <aside class="sidebar">
-        <h2>Admin Panel</h2>
-        <ul>
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="../admin/manage-doctors.php">Manage Doctors</a></li>
-            <li><a href="#">Manage Patients</a></li>
-            <li><a href="#">Manage Lab Assistants</a></li>
-            <li><a href="#">Manage Appointments</a></li>
-            <li><a href="#">Manage Reports</a></li>
-            <li><a href="../auth/logout.php">Logout</a></li>
-        </ul>
-    </aside>
-
-    <main class="main-content">
+<div class="admin-content">
         <h1>Welcome, Admin!</h1>
         <p>Here you can manage hospital activities.</p>
 
@@ -37,5 +26,4 @@
                 <p>32</p>
             </div>
         </div>
-    </main>
 </div>

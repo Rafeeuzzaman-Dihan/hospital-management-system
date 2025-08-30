@@ -30,8 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 case 'doctor':
                     header("Location: ../doctor/dashboard.php");
                     exit;
-                case 'patient':
-                    header("Location: ../patient/dashboard.php");
+                case 'user':
+                    header("Location: ../user/dashboard.php");
                     exit;
                 case 'lab':
                     header("Location: ../lab/dashboard.php");
