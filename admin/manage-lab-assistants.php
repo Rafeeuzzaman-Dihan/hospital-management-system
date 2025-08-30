@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_lab'])) {
     $password   = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $position   = $_POST['position'];
 
-    // Insert user
+    // Insert patient
     $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, username, email, password, role) VALUES (?, ?, ?, ?, ?, 'lab')");
     $stmt->execute([$first_name, $last_name, $username, $email, $password]);
     $user_id = $conn->lastInsertId();

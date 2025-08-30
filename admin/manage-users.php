@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'])) {
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
 
-    // Delete user
+    // Delete patient
     $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
     $stmt->execute([$delete_id]);
 

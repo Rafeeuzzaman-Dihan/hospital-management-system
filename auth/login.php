@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    // Check user in DB
+    // Check patient in DB
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = :username");
     $stmt->bindParam(":username", $username);
     $stmt->execute();
@@ -30,8 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 case 'doctor':
                     header("Location: ../doctor/dashboard.php");
                     exit;
-                case 'user':
-                    header("Location: ../user/dashboard.php");
+                case 'patient':
+                    header("Location: ../patient/dashboard.php");
                     exit;
                 case 'lab':
                     header("Location: ../lab/dashboard.php");
