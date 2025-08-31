@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../auth/login.php");
+    exit;
+}
 include "../includes/admin-sidebar.php";
 ?>
 <link rel="stylesheet" href="../css/navbar.css">
