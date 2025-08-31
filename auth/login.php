@@ -4,6 +4,8 @@ session_start();
 include "../includes/navbar.php";
 include "../db/connection.php";
 
+$error = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
@@ -51,6 +53,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <div class="login-container">
     <h2>Login</h2>
+
+    <!-- Display error -->
+    <?php if($error): ?>
+        <div class="error-message">
+            <?= $error ?>
+        </div>
+    <?php endif; ?>
+
     <form action="#" method="post">
         <div class="form-group">
             <label for="username">Username</label>
@@ -71,3 +81,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </form>
 </div>
+
+<style>
+    /* Error styling */
+    .error-message {
+        background-color: #e74c3c;
+        color: #fff;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        text-align: center;
+    }
+</style>
