@@ -14,7 +14,7 @@ $doctor_id = $_SESSION['user_id'];
 // ------------------ Handle Cancel Appointment ------------------
 if (isset($_GET['cancel_id'])) {
     $cancel_id = $_GET['cancel_id'];
-    $stmt = $conn->prepare("UPDATE appointments SET status = 'canceled' WHERE id = ? AND doctor_id = ?");
+    $stmt = $conn->prepare("UPDATE appointments SET status = 'cancelled' WHERE id = ? AND doctor_id = ?");
     $stmt->execute([$cancel_id, $doctor_id]);
     header("Location: doctor-patients.php");
     exit;
