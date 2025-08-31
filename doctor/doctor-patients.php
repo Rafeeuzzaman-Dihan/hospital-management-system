@@ -20,6 +20,15 @@ if (isset($_GET['cancel_id'])) {
     exit;
 }
 
+// ------------------ Handle Mark Completed ------------------
+if (isset($_GET['complete_id'])) {
+    $complete_id = $_GET['complete_id'];
+    $stmt = $conn->prepare("UPDATE appointments SET status = 'completed' WHERE id = ? AND doctor_id = ?");
+    $stmt->execute([$complete_id, $doctor_id]);
+    header("Location: doctor-patients.php");
+    exit;
+}
+
 // ------------------ Fetch Doctor's Patients ------------------
 $sql = "SELECT a.id AS appointment_id, u.first_name, u.last_name, u.email, u.username, 
         a.appointment_date, a.appointment_time, a.status
@@ -48,7 +57,9 @@ $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <th>Appointment Date</th>
                 <th>Appointment Time</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th>Add Test</th>
+                <th>Mark Completed</th>
+                <th>Cancel</th>
             </tr>
             </thead>
             <tbody>
@@ -60,9 +71,29 @@ $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= date("d M Y", strtotime($p['appointment_date'])) ?></td>
                     <td><?= date("h:i A", strtotime($p['appointment_time'])) ?></td>
                     <td><?= ucfirst($p['status']) ?></td>
+
+                    <!-- Add Test Button -->
                     <td>
-                        <?php if($p['status'] != 'canceled'): ?>
-                            <a href="?cancel_id=<?= $p['appointment_id'] ?>" onclick="return confirm('Are you sure you want to cancel this appointment?')">Cancel</a>
+                        <?php if($p['status'] != 'cancelled'): ?>
+                            <button class="btn-add-test" onclick="alert('Add Test functionality coming soon!')">Add Test</button>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
+                    </td>
+
+                    <!-- Mark Completed -->
+                    <td>
+                        <?php if($p['status'] != 'completed' && $p['status'] != 'cancelled'): ?>
+                            <a href="?complete_id=<?= $p['appointment_id'] ?>" class="btn-complete" onclick="return confirm('Mark this appointment as completed?')">Complete</a>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
+                    </td>
+
+                    <!-- Cancel -->
+                    <td>
+                        <?php if($p['status'] != 'completed' && $p['status'] != 'cancelled'): ?>
+                            <a href="?cancel_id=<?= $p['appointment_id'] ?>" class="btn-cancel" onclick="return confirm('Are you sure you want to cancel this appointment?')">Cancel</a>
                         <?php else: ?>
                             -
                         <?php endif; ?>
