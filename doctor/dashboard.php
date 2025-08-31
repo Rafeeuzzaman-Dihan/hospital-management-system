@@ -1,37 +1,50 @@
-<link rel="stylesheet" href="../css/doctor-dash.css">
+<?php
+session_start();
+include "../includes/doctor-navbar.php";
+include "../db/connection.php";
 
-<div class="doctor-navbar">
-    <div class="doctor-logo">Doctor Panel</div>
-    <ul class="doctor-nav-links">
-        <li><a href="doctor-dashboard.php" class="active">Dashboard</a></li>
-        <li><a href="doctor-patients.php">My Patients</a></li>
-        <li><a href="doctor-appointments.php">Appointments</a></li>
-        <li><a href="doctor-lab-results.php">Lab Results</a></li>
-        <li><a href="doctor-prescriptions.php">Prescriptions</a></li>
-        <li><a href="../auth/logout.php">Logout</a></li>
-    </ul>
-</div>
+$doctor_id = $_SESSION['user_id'];
+
+// Total patients
+$stmt = $conn->prepare("SELECT COUNT(DISTINCT user_id) AS total_patients FROM appointments WHERE doctor_id = ?");
+$stmt->execute([$doctor_id]);
+$totalPatients = $stmt->fetch(PDO::FETCH_ASSOC)['total_patients'] ?? 0;
+
+// Today's appointments
+$stmt = $conn->prepare("SELECT COUNT(*) AS todays_appointments FROM appointments WHERE doctor_id = ? AND appointment_date = CURDATE()");
+$stmt->execute([$doctor_id]);
+$todaysAppointments = $stmt->fetch(PDO::FETCH_ASSOC)['todays_appointments'] ?? 0;
+
+// Pending reports placeholder
+$pendingReports = 0;
+
+// Messages placeholder (if you don’t have messages table yet)
+$unreadMessages = 0;
+?>
+
+<link rel="stylesheet" href="../css/doctor-navbar.css">
+<link rel="stylesheet" href="../css/doctor-dashboard.css">
 
 <div class="doctor-content">
-    <h1>Welcome, Doctor!</h1>
-    <p>Here you can view your schedule and manage patients.</p>
+    <h1>Welcome, Dr. <?= $_SESSION['username'] ?>!</h1>
+    <p>Here you can view your schedule and manage your patients.</p>
 
     <div class="doctor-cards">
         <div class="doctor-card">
             <h3>Today's Appointments</h3>
-            <p>8</p>
+            <p><?= $todaysAppointments ?></p>
         </div>
         <div class="doctor-card">
             <h3>Total Patients</h3>
-            <p>120</p>
+            <p><?= $totalPatients ?></p>
         </div>
         <div class="doctor-card">
             <h3>Pending Reports</h3>
-            <p>5</p>
+            <p><?= $pendingReports ?></p>
         </div>
         <div class="doctor-card">
             <h3>Messages</h3>
-            <p>3</p>
+            <p><?= $unreadMessages ?></p>
         </div>
     </div>
 </div>
