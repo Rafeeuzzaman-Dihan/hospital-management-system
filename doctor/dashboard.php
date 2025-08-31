@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'doctor') {
+    header("Location: ../auth/login.php");
+    exit;
+}
+
 include "../includes/doctor-navbar.php";
 include "../db/connection.php";
 
